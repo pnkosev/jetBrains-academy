@@ -72,21 +72,31 @@ async function stageTest() {
             for (let div of divs) {
                 if (div.children.length === 9) {
                     for (let card of Array.from(div.children)) {
-                        if (card.children[0] && card.children[0].tagName.toLowerCase() === 'p') {
-                            let font = window.getComputedStyle(div.children[0]).fontFamily;
-                            if (font === '"serif"' || font === '"Times New Roman"') {
-                                return hs.wrong("Text on cards should have font different from 'serif' and 'Times New Roman'");
+                        if (card.children[0] && card.children[0].tagName.toLowerCase() === 'div') {
+                            if (card.children[0].children.length === 2) {
+                                for (let sideDir of card.children[0].children) {
+                                    if (sideDir.children[0] && sideDir.children[0].tagName && sideDir.children[0].tagName.toLowerCase() === 'p') {
+                                        let font = window.getComputedStyle(sideDir.children[0]).fontFamily;
+                                        if (font === '"serif"' || font === '"Times New Roman"') {
+                                            return hs.wrong("Text on cards should have font different from 'serif' and 'Times New Roman'");
+                                        } else {
+                                            k++;
+                                        }
+                                    } else {
+                                        return hs.wrong("All text on the cards should be in 'p' element");
+                                    }
+                                }
                             } else {
-                                k++;
+                                return hs.wrong("Each card should have suggested structure - there should be 4 divs for each card.");
                             }
                         } else {
-                            return hs.wrong("The structure should be the same as given in the step and all text on the cards should be in 'p' element");
+                            return hs.wrong("Each card should have suggested structure - there should be 4 divs for each card.");
                         }
                     }
                 }
             }
 
-            return k !== 9 ? hs.wrong("9 div elements should contain p element.") : hs.correct();
+            return k !== 18 ? hs.wrong("There should be 2 p elements for each of the cards") : hs.correct();
         },
         //#test4
         /*
@@ -152,8 +162,7 @@ async function stageTest() {
     await browser.close();
     return result;
 }
-
-jest.setTimeout(30000);
+jest.setTimeout(7000);
 test("Test stage", async () => {
         let result = await stageTest();
         if (result['type'] === 'wrong') {
